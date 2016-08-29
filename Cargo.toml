@@ -1,0 +1,9 @@
+[package]
+name = "wsm_rs"
+version = "0.1.0"
+authors = ["Galimov Arsen Gareginovich <loomaclin@yandex.ru>"]
+
+[dependencies]
+influent = { git = "https://github.com/LooMaclin/influent.rs.git" }
+hyper = "0.9.10"
+xml-rs = "0.3.4"
