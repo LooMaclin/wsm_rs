@@ -8,7 +8,7 @@ You need to install `PerfServlet` to `WebSphere`.
 
 ### Information
 
-This tool uses PerfServlet to get specific metrics from WebSphere, after it's parse them and pushing all parsed data to the InfluxDB.
+This tool uses PerfServlet to get specific metrics from WebSphere, parses them and pushes to the InfluxDB.
 
 ### Build
 
