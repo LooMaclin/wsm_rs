@@ -16,7 +16,7 @@ Run `cargo run` command.
 
 ### Visualising
 
-You can check results with `Grafana` or use `InfluxDB CLI` or `InfluxDB` admin dashboard.
+This tool uses `PerfServlet` to get specific metrics from `WebSphere` and pushes the data to the `InfluxDB` after it's parsed.
 
 Samples:
 
