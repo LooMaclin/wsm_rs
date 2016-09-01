@@ -6,6 +6,16 @@ WebSphere monitoring utility written on Rust.
 
 You need to install `PerfServlet` to `WebSphere`.
 
+### TODO
+
+- [X] Getting XML from `PerfServlet` (with `Hyper`)
+- [X] Parsing and collect statistics from XML.
+- [X] Pushing the collected data to `InfluxDB`.
+- [ ] Create CLI with customising parameters.
+- [ ] Fixed pushing interval (now i'ts only N-sec wait, without correlation)
+- [ ] Generating basic dashboard for `Grafana` (basics on IBM `WebSphere` Monitoring [book](http://www.redbooks.ibm.com/redpapers/pdfs/redp4579.pdf)).
+- [ ] Anything else?
+
 ### Information
 
 This tool uses PerfServlet to get specific metrics from WebSphere, parses them and pushes to the InfluxDB.
