@@ -1,6 +1,8 @@
 extern crate influent;
 extern crate hyper;
 extern crate xml;
+#[macro_use]
+extern crate clap;
 
 use influent::create_client;
 use influent::client::{Client, Credentials};
@@ -18,6 +20,7 @@ use std::{thread, time};
 use std::fmt::Write;
 use std::collections::HashMap;
 use influent::client::http::{HttpClient};
+use clap::App;
 
 pub fn get_value(value_name: &str, attributes: &Vec<xml::attribute::OwnedAttribute>) -> String {
     let mut result : String = String::new();
@@ -44,12 +47,26 @@ pub enum WebSphereMetric {
 }
 
 fn main() {
+
+    let yaml = load_yaml!("cli.yml");
+    let matches = App::from(yaml).get_matches();
+
+    let db_username = matches.value_of("influxdb_username").unwrap();
+    let db_password = matches.value_of("influxdb_password").unwrap();
+    let db_name = matches.value_of("influxdb_name").unwrap();
+    let ip_ = matches.value_of("websphere_address").unwrap();
+    let
+
     let credentials = Credentials {
-        username: "username",
-        password: "password",
-        database: "database_name",
+        username: db_username,
+        password: db_password,
+        database: db_name,
     };
-    let hosts = vec!["http://localhost:8086"];
+
+    let hosts : Vec<String> = Vec::new();
+
+
+
     let client = create_client(credentials, hosts);
     let hyper_client : HyperClient = HyperClient::new();
     let sleep_time = time::Duration::from_secs(1);
@@ -58,7 +75,7 @@ fn main() {
         headers.set(
             Authorization(
                 Basic {
-                    username: "username".to_string(),
+                    username: "user".to_string(),
                     password: Some("password".to_string())
                 }
             ));
@@ -173,6 +190,7 @@ fn main() {
                     measurement.add_tag("stat".to_string(), source_info.stat);
                     measurement.add_tag("node".to_string(), source_info.node);
                     measurement.add_tag("server".to_string(), source_info.server);
+                    measurement.add_tag("ip".to_string(), ip.to_string());
                     measurements.push(measurement);
                 },
                 WebSphereMetric::TimeStatistic{ name, total_time, source_info } => {
@@ -181,6 +199,7 @@ fn main() {
                     measurement.add_tag("stat".to_string(), source_info.stat);
                     measurement.add_tag("node".to_string(), source_info.node);
                     measurement.add_tag("server".to_string(), source_info.server);
+                    measurement.add_tag("ip".to_string(), ip.to_string());
                     measurements.push(measurement);
                 },
                 WebSphereMetric::RangeStatistic{ name, value, source_info } => {
@@ -189,6 +208,7 @@ fn main() {
                     measurement.add_tag("stat".to_string(), source_info.stat);
                     measurement.add_tag("node".to_string(), source_info.node);
                     measurement.add_tag("server".to_string(), source_info.server);
+                    measurement.add_tag("ip".to_string(), ip.to_string());
                     measurements.push(measurement);
                 },
                 WebSphereMetric::BoundedRangeStatistic{ name, value, source_info } => {
@@ -197,6 +217,7 @@ fn main() {
                     measurement.add_tag("stat".to_string(), source_info.stat);
                     measurement.add_tag("node".to_string(), source_info.node);
                     measurement.add_tag("server".to_string(), source_info.server);
+                    measurement.add_tag("ip".to_string(), ip.to_string());
                     measurements.push(measurement);
                 },
             }
@@ -205,4 +226,5 @@ fn main() {
         measurements.clear();
         thread::sleep(sleep_time);
     }
+    */
 }

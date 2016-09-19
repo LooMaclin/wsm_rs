@@ -1,0 +1,47 @@
+name: grid-rs
+version: 0.1.0
+author: Arsen Galimov aka "Loo Maclin" <loo.maclin@protonmail.com>
+about: This alternative implementation Selenium Grid on Rust programming language.
+args:
+    - influxdb_address:
+       short: a
+       long: influxdb_address
+       help: Set the influxdb address.
+       required: true
+       takes_value: true
+    - influxdb_username:
+       short: u
+       long: influxdb_username
+       help: Set the influxdb username.
+       required: true
+       takes_value: true
+    - influxdb_password:
+       short: p
+       long: influxdb_password
+       help: Set the influxdb user password.
+       required: true
+       takes_value: true
+    - influxdb_name:
+       short: n
+       long: influxdb_name
+       help: Set the influxdb database name.
+       required: true
+       takes_value: true
+    - websphere_address:
+       short: w
+       long: websphere_address
+       help: Set the web sphere address.
+       required: true
+       takes_value: true
+    - websphere_user:
+       short: e
+       long: websphere_user
+       help: Set the web sphere user.
+       required: true
+       takes_value: true
+    - websphere_password:
+       short: b
+       long: websphere_password
+       help: Set the web sphere password.
+       required: true
+       takes_value: true
