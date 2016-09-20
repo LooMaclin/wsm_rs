@@ -51,11 +51,13 @@ fn main() {
     let yaml = load_yaml!("cli.yml");
     let matches = App::from(yaml).get_matches();
 
+    let influxdb_address = matches.value_of("influxdb_address").unwrap();
     let db_username = matches.value_of("influxdb_username").unwrap();
     let db_password = matches.value_of("influxdb_password").unwrap();
     let db_name = matches.value_of("influxdb_name").unwrap();
-    let ip_ = matches.value_of("websphere_address").unwrap();
-    let
+    let ws_ip = matches.value_of("websphere_address").unwrap();
+    let ws_username = matches.value_of("websphere_user").unwrap();
+    let ws_password = matches.value_of("websphere_password").unwrap();
 
     let credentials = Credentials {
         username: db_username,
@@ -63,10 +65,8 @@ fn main() {
         database: db_name,
     };
 
-    let hosts : Vec<String> = Vec::new();
-
-
-
+    let mut hosts : Vec<&str> = Vec::new();
+    hosts.push(influxdb_address);
     let client = create_client(credentials, hosts);
     let hyper_client : HyperClient = HyperClient::new();
     let sleep_time = time::Duration::from_secs(1);
@@ -75,14 +75,16 @@ fn main() {
         headers.set(
             Authorization(
                 Basic {
-                    username: "user".to_string(),
-                    password: Some("password".to_string())
+                    username: ws_username.to_string(),
+                    password: Some(ws_password.to_string())
                 }
             ));
-        let mut res = hyper_client.get("http://ip/wasPerfTool/servlet/perfservlet")
-            .headers(headers)
-            .send()
-            .unwrap();
+        if let Ok(mut res) =
+            hyper_client.get(format!("http://{}/wasPerfTool/servlet/perfservlet", ws_ip).as_str())
+                .headers(headers)
+                .send() {
+            let mut res = res;
+
         let mut response_body : String = String::new();
         res.read_to_string(&mut response_body);
         let reader = EventReader::new(response_body.as_bytes());
@@ -190,7 +192,7 @@ fn main() {
                     measurement.add_tag("stat".to_string(), source_info.stat);
                     measurement.add_tag("node".to_string(), source_info.node);
                     measurement.add_tag("server".to_string(), source_info.server);
-                    measurement.add_tag("ip".to_string(), ip.to_string());
+                    measurement.add_tag("ip".to_string(), ws_ip.to_string());
                     measurements.push(measurement);
                 },
                 WebSphereMetric::TimeStatistic{ name, total_time, source_info } => {
@@ -199,7 +201,7 @@ fn main() {
                     measurement.add_tag("stat".to_string(), source_info.stat);
                     measurement.add_tag("node".to_string(), source_info.node);
                     measurement.add_tag("server".to_string(), source_info.server);
-                    measurement.add_tag("ip".to_string(), ip.to_string());
+                    measurement.add_tag("ip".to_string(), ws_ip.to_string());
                     measurements.push(measurement);
                 },
                 WebSphereMetric::RangeStatistic{ name, value, source_info } => {
@@ -208,7 +210,7 @@ fn main() {
                     measurement.add_tag("stat".to_string(), source_info.stat);
                     measurement.add_tag("node".to_string(), source_info.node);
                     measurement.add_tag("server".to_string(), source_info.server);
-                    measurement.add_tag("ip".to_string(), ip.to_string());
+                    measurement.add_tag("ip".to_string(), ws_ip.to_string());
                     measurements.push(measurement);
                 },
                 WebSphereMetric::BoundedRangeStatistic{ name, value, source_info } => {
@@ -217,14 +219,20 @@ fn main() {
                     measurement.add_tag("stat".to_string(), source_info.stat);
                     measurement.add_tag("node".to_string(), source_info.node);
                     measurement.add_tag("server".to_string(), source_info.server);
-                    measurement.add_tag("ip".to_string(), ip.to_string());
+                    measurement.add_tag("ip".to_string(), ws_ip.to_string());
                     measurements.push(measurement);
                 },
             }
         }
-        client.write_many(&measurements, Some(Precision::Nanoseconds));
+        match client.write_many(&measurements, Some(Precision::Seconds)) {
+            Ok(a) => (),
+            Err(e) => println!("error: {:?}",e),
+        }
         measurements.clear();
         thread::sleep(sleep_time);
+        }
+            else {
+                println!("WebSphere not responded...try again.")
+            }
     }
-    */
 }
