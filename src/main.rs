@@ -58,6 +58,16 @@ fn main() {
     let ws_ip = matches.value_of("websphere_address").unwrap();
     let ws_username = matches.value_of("websphere_user").unwrap();
     let ws_password = matches.value_of("websphere_password").unwrap();
+    let wait_time = matches.value_of("wait_time").unwrap_or("5").parse::<u64>().unwrap_or(5);
+
+    println!("InfluxDB address : {}", influxdb_address);
+    println!("InfluxDB username : {}", db_username);
+    println!("InfluxDB password : {}", db_password);
+    println!("InfluxDB name : {}", db_name);
+    println!("WebSphere address : {}", ws_ip);
+    println!("WebSphere name : {}", ws_username);
+    println!("WebSphere password : {}", ws_password);
+    println!("Wait time : {}", wait_time);
 
     let credentials = Credentials {
         username: db_username,
@@ -69,7 +79,9 @@ fn main() {
     hosts.push(influxdb_address);
     let client = create_client(credentials, hosts);
     let hyper_client : HyperClient = HyperClient::new();
-    let sleep_time = time::Duration::from_secs(1);
+    let sleep_time = time::Duration::from_secs(wait_time);
+    println!("Monitoring started...");
+    let path = format!("http://{}/wasPerfTool/servlet/perfservlet", ws_ip);
     loop {
         let mut headers = Headers::new();
         headers.set(
@@ -80,7 +92,7 @@ fn main() {
                 }
             ));
         if let Ok(mut res) =
-            hyper_client.get(format!("http://{}/wasPerfTool/servlet/perfservlet", ws_ip).as_str())
+            hyper_client.get(path.as_str())
                 .headers(headers)
                 .send() {
             let mut res = res;
@@ -229,10 +241,10 @@ fn main() {
             Err(e) => println!("error: {:?}",e),
         }
         measurements.clear();
-        thread::sleep(sleep_time);
+
+        } else {
+            println!("WebSphere ({}) not responded...try again.", path)
         }
-            else {
-                println!("WebSphere not responded...try again.")
-            }
+        thread::sleep(sleep_time);
     }
 }

@@ -3,6 +3,12 @@ version: 0.1.0
 author: Arsen Galimov aka "Loo Maclin" <loo.maclin@protonmail.com>
 about: This alternative implementation Selenium Grid on Rust programming language.
 args:
+    - wait_time:
+       short: t
+       long: wait_time
+       help: Set the wait time.
+       required: false
+       takes_value: true
     - influxdb_address:
        short: a
        long: influxdb_address
