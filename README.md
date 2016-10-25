@@ -11,7 +11,8 @@ You need to install `PerfServlet` to `WebSphere`.
 - [X] Getting XML from `PerfServlet` (with `Hyper`)
 - [X] Parsing and collect statistics from XML.
 - [X] Pushing the collected data to `InfluxDB`.
-- [ ] Create CLI with customising parameters.
+- [X] Docker container.
+- [X] Create CLI with customising parameters.
 - [ ] Fixed pushing interval (now i'ts only N-sec wait, without correlation)
 - [ ] Generating basic dashboard for `Grafana` (basics on IBM `WebSphere` Monitoring [book](http://www.redbooks.ibm.com/redpapers/pdfs/redp4579.pdf)).
 - [ ] Anything else?
